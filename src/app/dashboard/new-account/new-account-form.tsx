@@ -1,3 +1,5 @@
+'use client'
+
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -10,13 +12,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { FormEvent, useState } from 'react'
+import { FormEvent, useState, useTransition } from 'react'
 import { z } from 'zod'
 import { accountsInsertSchema, Currency } from '@/lib/db/schema/accounts'
 import { createAccount } from './actions'
 import { getAccounts } from './../actions'
 import { useAccounts } from '../dashboard-state-provider'
 import { simpleToast } from '@/lib/utils'
+import { Loader2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 export function NewAccountForm() {
   const [formData, setFormData] = useState({
@@ -24,33 +28,38 @@ export function NewAccountForm() {
     currency: Currency.CHF, // Default to CHF
   })
   const [errors, setErrors] = useState({ name: '', currency: '' })
-
+  const [isPending, startTransition] = useTransition()
   const { setAccounts } = useAccounts()
+
+  const router = useRouter()
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
 
-    try {
-      const validatedData = accountsInsertSchema.parse(formData)
-      const response = await createAccount(validatedData)
-      simpleToast(response)
-      if (response.success) {
-        const accountsData = await getAccounts()
+    startTransition(async () => {
+      try {
+        const validatedData = accountsInsertSchema.parse(formData)
+        const response = await createAccount(validatedData)
+        simpleToast(response)
+        if (response.success) {
+          const accountsData = await getAccounts()
 
-        if (accountsData && accountsData.length > 0) {
-          setAccounts(accountsData)
+          if (accountsData && accountsData.length > 0) {
+            setAccounts(accountsData)
+          }
+          setErrors({ name: '', currency: '' }) // Clear all errors on successful submit
+          router.push('/dashboard')
         }
-        setErrors({ name: '', currency: '' }) // Clear all errors on successful submit
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          const fieldErrors = error.flatten().fieldErrors
+          setErrors({
+            name: fieldErrors.name?.[0] || '',
+            currency: fieldErrors.currency?.[0] || '',
+          })
+        }
       }
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        const fieldErrors = error.flatten().fieldErrors
-        setErrors({
-          name: fieldErrors.name?.[0] || '',
-          currency: fieldErrors.currency?.[0] || '',
-        })
-      }
-    }
+    })
   }
 
   const handleNameChange = (value: string) => {
@@ -121,8 +130,12 @@ export function NewAccountForm() {
 
         {/* Submit Button */}
         <div className="mt-6">
-          <Button type="submit" className="w-full">
-            Create Account
+          <Button type="submit" className="w-full" disabled={isPending}>
+            {isPending ? (
+              <Loader2 className="animate-spin" />
+            ) : (
+              'Create Account'
+            )}
           </Button>
         </div>
       </form>

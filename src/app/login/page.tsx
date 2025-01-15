@@ -17,7 +17,7 @@ import { signIn } from './actions'
 import { useRouter } from 'next/navigation'
 import { useState, useTransition } from 'react'
 import Link from 'next/link'
-import { Loader, GalleryVerticalEnd } from 'lucide-react'
+import { Loader, GalleryVerticalEnd, Loader2 } from 'lucide-react'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -111,9 +111,10 @@ export default function LoginPage() {
                     </p>
                   )}
                 </div>
-                <Button type="submit" className="w-full">
-                  Login
+                <Button type="submit" className="w-full" disabled={isPending}>
+                  {isPending ? <Loader2 className="animate-spin" /> : 'Login'}
                 </Button>
+
                 {errorMessage && (
                   <p className="mt-2 text-sm text-red-500">{errorMessage}</p>
                 )}
