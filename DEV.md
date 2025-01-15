@@ -1,5 +1,12 @@
 # Tech Stack Comments
 
+## Setup 
+
+### Supabase
+
+Under Supabase -> Authentication -> URL Configuration, make sure to set
+the site domain name
+
 ## **Updating the DB**
 
 > **DO NOT UPDATE THE DB SCHEMA MANUALLY IN SUPABASE**
