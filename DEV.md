@@ -2,10 +2,11 @@
 
 ## Setup 
 
-### Supabase
+Domain name dependent settings: 
 
-Under Supabase -> Authentication -> URL Configuration, make sure to set
+1. Under Supabase -> Authentication -> URL Configuration, make sure to set
 the site domain name
+2. There is a secret with the URL
 
 ## **Updating the DB**
 
