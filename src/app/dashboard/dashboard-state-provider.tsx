@@ -93,28 +93,27 @@ export function DashboardStateProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     async function fetchData() {
-      const profileData = await getProfile()
+      // TODO: Not safe way to do this
+      const [profileData, paymentsData, accountsData] = await Promise.all([
+        getProfile(),
+        getPayments(),
+        getAccounts(),
+      ])
 
       if (!profileData || profileData.length === 0) {
         router.push('/create-profile')
         return
       }
 
-      setProfile(profileData[0])
-
-      const paymentsData = await getPayments()
-      // TODO: Not safe way to do this
-      setPayments(paymentsData!)
-
-      const accountsData = await getAccounts()
-
       if (!accountsData || accountsData.length === 0) {
         toast({ variant: 'destructive', description: 'No accounts found' })
         router.push('/create-profile')
         return
       }
-      setAccounts(accountsData)
 
+      setProfile(profileData[0])
+      setPayments(paymentsData!)
+      setAccounts(accountsData)
       if (accountsData.length > 0) {
         setCurrentAccount(accountsData[0])
       }
