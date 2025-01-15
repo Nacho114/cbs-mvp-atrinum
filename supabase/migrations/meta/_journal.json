@@ -1,0 +1,34 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1736869154826,
+      "tag": "0000_unique_nico_minoru",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1736869376256,
+      "tag": "0001_lethal_silver_centurion",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1736874272978,
+      "tag": "0002_cooing_ravenous",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1736876065043,
+      "tag": "0003_silent_rockslide",
+      "breakpoints": true
+    }
+  ]
+}

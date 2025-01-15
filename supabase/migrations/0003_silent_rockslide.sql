@@ -1,0 +1,1 @@
+ALTER TABLE "payments" ADD COLUMN "execution_date" timestamp;
