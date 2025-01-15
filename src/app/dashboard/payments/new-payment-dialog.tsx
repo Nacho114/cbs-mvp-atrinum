@@ -16,7 +16,6 @@ import { paymentsInsertSchema } from '@/lib/db/schema/payments'
 import { useCurrentAccount, usePayments } from '../dashboard-state-provider'
 import { z } from 'zod'
 import { createPayment } from './actions'
-import { toast } from '@/hooks/use-toast'
 import { getPayments } from '../actions'
 import { simpleToast } from '@/lib/utils'
 

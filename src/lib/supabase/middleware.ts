@@ -4,6 +4,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 // From The official docs:
 // https://supabase.com/docs/guides/auth/server-side/nextjs
 
+ /* eslint-disable @typescript-eslint/no-unused-vars */
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
