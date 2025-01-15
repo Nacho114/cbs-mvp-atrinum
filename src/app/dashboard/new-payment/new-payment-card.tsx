@@ -1,17 +1,16 @@
+// NewPaymentCard component
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+} from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Plus } from 'lucide-react'
 import { paymentsInsertSchema } from '@/lib/db/schema/payments'
 import { useCurrentAccount, usePayments } from '../dashboard-state-provider'
 import { z } from 'zod'
@@ -19,8 +18,7 @@ import { createPayment } from './actions'
 import { getPayments } from '../actions'
 import { simpleToast } from '@/lib/utils'
 
-export function NewPaymentDialog() {
-  const [isOpen, setIsOpen] = useState(false) // State to control the dialog visibility
+export function NewPaymentCard() {
   const [formData, setFormData] = useState<{
     destinationName: string
     amount: string
@@ -64,8 +62,8 @@ export function NewPaymentDialog() {
         if (newPayments) {
           setPayments(newPayments)
         }
-        setIsOpen(false) // Close the dialog
-        simpleToast(response) // Send toast after closing dialog
+        simpleToast(response) // Send toast on success
+        setFormData({ destinationName: '', amount: '' }) // Reset form
       } else {
         simpleToast(response)
       }
@@ -88,21 +86,16 @@ export function NewPaymentDialog() {
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant="secondary">
-          <Plus /> New Payment
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>New Payment</DialogTitle>
-          <DialogDescription>
-            Enter the details for the new payment below. Click save when you’re
-            done.
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="grid gap-4 py-4">
+    <Card className="max-w-md mx-auto">
+      <CardHeader>
+        <CardTitle>New Payment</CardTitle>
+        <CardDescription>
+          Enter the details for the new payment below. Click confirm when you’re
+          done.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="grid gap-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="account" className="text-right">
               Account
@@ -147,11 +140,11 @@ export function NewPaymentDialog() {
               <p className="text-red-500 text-sm col-span-4">{errors.amount}</p>
             )}
           </div>
-          <DialogFooter>
+          <CardFooter>
             <Button type="submit">Confirm Payment</Button>
-          </DialogFooter>
+          </CardFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </CardContent>
+    </Card>
   )
 }

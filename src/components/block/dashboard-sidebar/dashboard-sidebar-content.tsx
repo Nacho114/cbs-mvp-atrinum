@@ -1,4 +1,4 @@
-import { ArrowRightLeft, Home,  Shuffle } from 'lucide-react'
+import { ArrowRightLeft, Banknote, Home, Shuffle } from 'lucide-react'
 import Link from 'next/link'
 
 import {
@@ -23,6 +23,12 @@ const items = [
     url: '/dashboard/payments',
     icon: ArrowRightLeft,
   },
+  {
+    title: 'New Payment',
+    url: '/dashboard/new-payment',
+    icon: Banknote,
+  },
+
   {
     title: 'Move',
     url: '/dashboard/move',

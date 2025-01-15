@@ -4,11 +4,7 @@ import { cn } from '@/lib/utils'
 
 const Loading: React.FC = () => {
   return (
-    <div
-      className={cn(
-        'flex items-center justify-center h-screen w-screen bg-gray-100',
-      )}
-    >
+    <div className={cn('flex items-center justify-center h-screen w-screen')}>
       <div className="animate-spin">
         <Loader size={48} />
       </div>

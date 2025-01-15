@@ -43,7 +43,6 @@ export default function PaymentsPage() {
         <Badge variant="outline" className="text-lg font-semibold px-4 py-1">
           Payments
         </Badge>
-        <NewPaymentDialog />
       </div>
 
       {/* Future Payments Section in ShadCN Card */}
