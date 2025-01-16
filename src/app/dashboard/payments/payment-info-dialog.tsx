@@ -12,7 +12,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -31,9 +30,9 @@ export function PaymentInfoDialog({ payment }: { payment: SelectPayment }) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Transaction Details</DialogTitle>
+          <DialogTitle>Payment Details</DialogTitle>
           <DialogDescription>
-            Detailed information about the selected transaction.
+            Detailed information about the selected payment.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -70,9 +69,7 @@ export function PaymentInfoDialog({ payment }: { payment: SelectPayment }) {
             <span className="col-span-2 truncate">{payment.iban}</span>
           </div>
         </div>
-        <DialogFooter>
-          <Button>Download Confirmation</Button>
-        </DialogFooter>
+        <Button>Download Confirmation</Button>
       </DialogContent>
     </Dialog>
   )

@@ -81,7 +81,6 @@ export function NewPaymentCard() {
   )
 
   const { currentAccount } = useCurrentAccount()
-  // const { setPayments } = usePayments()
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target
@@ -156,7 +155,7 @@ export function NewPaymentCard() {
               id="account"
               value={currentAccount.name}
               readOnly
-              className="col-span-3"
+              className="col-span-3 bg-gray-200"
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
