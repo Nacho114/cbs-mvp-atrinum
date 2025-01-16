@@ -11,6 +11,13 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '@/components/ui/select'
 import { paymentsInsertSchema } from '@/lib/db/schema/payments'
 import { useCurrentAccount, usePayments } from '../dashboard-state-provider'
 import { z } from 'zod'
@@ -18,21 +25,50 @@ import { createPayment } from './actions'
 import { getPayments } from '../actions'
 import { simpleToast } from '@/lib/utils'
 
+const countryOptions = [
+  'Germany',
+  'United Kingdom',
+  'United States',
+  'France',
+  'Spain',
+  'Italy',
+  'Canada',
+  'Australia',
+  'Japan',
+  'China',
+]
+
 export function NewPaymentCard() {
   const [formData, setFormData] = useState<{
-    destinationName: string
+    recipient: string
     amount: string
+    iban: string
+    swiftBic: string
+    country: string
+    description: string
   }>({
-    destinationName: '',
-    amount: '',
+    recipient: 'George Soros',
+    amount: '1000000',
+    iban: 'GB82WEST12345698765432',
+    swiftBic: 'DEUTDEFFXXX',
+    country: 'Germany',
+    description: 'Shorting the sterling',
   })
 
   const [errors, setErrors] = useState<{
-    destinationName: string
+    recipient: string
     amount: string
+    iban: string
+    swiftBic: string
+    country: string
+    description: string
   }>({
-    destinationName: '',
+    recipient: '',
     amount: '',
+    iban: '',
+    swiftBic: '',
+    country: '',
+    description: '',
   })
 
   const { currentAccount } = useCurrentAccount()
@@ -44,6 +80,11 @@ export function NewPaymentCard() {
     setErrors((prev) => ({ ...prev, [id]: '' })) // Clear error for the field on change
   }
 
+  const handleCountryChange = (value: string) => {
+    setFormData((prev) => ({ ...prev, country: value }))
+    setErrors((prev) => ({ ...prev, country: '' })) // Clear error for country on change
+  }
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
@@ -51,7 +92,11 @@ export function NewPaymentCard() {
       // Zod validation
       const validatedData = paymentsInsertSchema.parse({
         amount: parseFloat(formData.amount),
-        destinationName: formData.destinationName,
+        recipient: formData.recipient,
+        iban: formData.iban,
+        swiftBic: formData.swiftBic,
+        country: formData.country,
+        description: formData.description,
         paymentStatus: 'pending', // Default status
       })
 
@@ -63,15 +108,26 @@ export function NewPaymentCard() {
           setPayments(newPayments)
         }
         simpleToast(response) // Send toast on success
-        setFormData({ destinationName: '', amount: '' }) // Reset form
+        setFormData({
+          recipient: '',
+          amount: '',
+          iban: '',
+          swiftBic: '',
+          country: 'Germany',
+          description: '',
+        }) // Reset form
       } else {
         simpleToast(response)
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
         const fieldErrors = {
-          destinationName: '',
+          recipient: '',
           amount: '',
+          iban: '',
+          swiftBic: '',
+          country: '',
+          description: '',
         }
         error.errors.forEach((err) => {
           if (err.path[0] in fieldErrors) {
@@ -109,19 +165,93 @@ export function NewPaymentCard() {
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="destinationName" className="text-right">
-              Payee Name
+            <Label htmlFor="recipient" className="text-right">
+              Recipient
             </Label>
             <Input
-              id="destinationName"
-              placeholder="Enter Payee name"
+              id="recipient"
+              placeholder="Enter Recipient name"
               className="col-span-3"
-              value={formData.destinationName}
+              value={formData.recipient}
               onChange={handleInputChange}
             />
-            {errors.destinationName && (
+            {errors.recipient && (
               <p className="text-red-500 text-sm col-span-4">
-                {errors.destinationName}
+                {errors.recipient}
+              </p>
+            )}
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="iban" className="text-right">
+              IBAN
+            </Label>
+            <Input
+              id="iban"
+              placeholder="Enter IBAN"
+              className="col-span-3"
+              value={formData.iban}
+              onChange={handleInputChange}
+            />
+            {errors.iban && (
+              <p className="text-red-500 text-sm col-span-4">{errors.iban}</p>
+            )}
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="swiftBic" className="text-right">
+              SWIFT/BIC
+            </Label>
+            <Input
+              id="swiftBic"
+              placeholder="Enter SWIFT/BIC"
+              className="col-span-3"
+              value={formData.swiftBic}
+              onChange={handleInputChange}
+            />
+            {errors.swiftBic && (
+              <p className="text-red-500 text-sm col-span-4">
+                {errors.swiftBic}
+              </p>
+            )}
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="country" className="text-right">
+              Country
+            </Label>
+            <div className="col-span-3">
+              <Select
+                value={formData.country}
+                onValueChange={handleCountryChange}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a country" />
+                </SelectTrigger>
+                <SelectContent>
+                  {countryOptions.map((country) => (
+                    <SelectItem key={country} value={country}>
+                      {country}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.country && (
+                <p className="text-red-500 text-sm">{errors.country}</p>
+              )}
+            </div>
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="description" className="text-right">
+              Description
+            </Label>
+            <Input
+              id="description"
+              placeholder="Enter Description"
+              className="col-span-3"
+              value={formData.description}
+              onChange={handleInputChange}
+            />
+            {errors.description && (
+              <p className="text-red-500 text-sm col-span-4">
+                {errors.description}
               </p>
             )}
           </div>

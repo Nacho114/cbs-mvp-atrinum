@@ -18,21 +18,29 @@ export async function createPayment(
 ) {
   return executeAction({
     actionFn: async () => {
-      const { destinationName, amount } = paymentsInsertSchema.parse(data)
+      // Validate input data using the schema
+      const { recipient, amount, iban, swiftBic, country, description } =
+        paymentsInsertSchema.parse(data)
 
+      // Get the authenticated user
       const user = await getUser()
-
       if (!user) throw new Error('User not found')
 
+      // Insert the payment record
       await db.insert(payments).values({
         userId: user.id,
         accountId: account.id,
-        paymentStatus: PaymentStatus.Pending,
-        destinationName,
+        paymentStatus: PaymentStatus.Pending, // Default status
+        recipient,
         amount,
+        iban,
+        swiftBic,
+        country,
+        description,
         lastModifiedBy: user.id,
       })
 
+      // Revalidate the path to update the dashboard
       revalidatePath('/dashboard')
     },
     isProtected: true, // Ensure the user is authenticated

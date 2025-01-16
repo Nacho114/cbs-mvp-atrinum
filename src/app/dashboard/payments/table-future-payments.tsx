@@ -6,6 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
 import { SelectPayment } from '@/lib/db/schema/payments'
 import { formatDate, formatValue } from '@/lib/utils'
 import { X } from 'lucide-react'
@@ -17,7 +18,7 @@ export function TableFuturePayments({
   payments: SelectPayment[]
 }) {
   const handleCancel = (payment: (typeof payments)[number]) => {
-    console.log(`Cancel payment for ${payment.destinationName || 'No Name'}`)
+    console.log(`Cancel payment for ${payment.recipient || 'No Name'}`)
   }
 
   const { currentAccount } = useCurrentAccount()
@@ -25,23 +26,23 @@ export function TableFuturePayments({
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Status</TableHead>
-          <TableHead>Name</TableHead>
-          <TableHead>Submission Date</TableHead>
+          <TableHead>Date</TableHead>
+          <TableHead>Description</TableHead>
           <TableHead className="text-right">Amount</TableHead>
+          <TableHead>Status</TableHead>
           <TableHead className="text-center">Action</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {payments.map((payment, index) => (
           <TableRow key={index}>
-            <TableCell className="font-medium">
-              {payment.paymentStatus}
-            </TableCell>
-            <TableCell>{payment.destinationName}</TableCell>
             <TableCell>{formatDate(payment.lastModifiedDate)}</TableCell>
+            <TableCell>{payment.description}</TableCell>
             <TableCell className="text-right">
               {formatValue(payment.amount, currentAccount.currency)}
+            </TableCell>
+            <TableCell>
+              <Badge variant="secondary">{payment.paymentStatus}</Badge>
             </TableCell>
             <TableCell className="text-center">
               <button

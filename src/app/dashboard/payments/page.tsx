@@ -4,7 +4,6 @@ import { Badge } from '@/components/ui/badge'
 import { ChevronDown, ChevronUp, ScrollText, FileText } from 'lucide-react'
 import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
-import { NewPaymentDialog } from './new-payment-dialog'
 import { TableFuturePayments } from './table-future-payments'
 import { TablePayments } from './table-payments'
 import {
