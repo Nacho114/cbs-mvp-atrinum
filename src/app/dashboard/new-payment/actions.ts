@@ -9,6 +9,7 @@ import {
   paymentsInsertSchema,
   InsertPayment,
   PaymentStatus,
+  generatePaymentReference,
 } from '@/lib/db/schema/payments'
 import { SelectAccount } from '@/lib/db/schema/accounts'
 
@@ -22,6 +23,7 @@ export async function createPayment(
       const { recipient, amount, iban, swiftBic, country, description } =
         paymentsInsertSchema.parse(data)
 
+      console.log({ data })
       // Get the authenticated user
       const user = await getUser()
       if (!user) throw new Error('User not found')
@@ -30,6 +32,7 @@ export async function createPayment(
       await db.insert(payments).values({
         userId: user.id,
         accountId: account.id,
+        reference: generatePaymentReference(),
         paymentStatus: PaymentStatus.Pending, // Default status
         recipient,
         amount,

@@ -18,6 +18,7 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select'
+import { Loader2 } from 'lucide-react'
 import { paymentsInsertSchema } from '@/lib/db/schema/payments'
 import { useCurrentAccount, usePayments } from '../dashboard-state-provider'
 import { z } from 'zod'
@@ -71,6 +72,8 @@ export function NewPaymentCard() {
     description: '',
   })
 
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
   const { currentAccount } = useCurrentAccount()
   const { setPayments } = usePayments()
 
@@ -87,6 +90,7 @@ export function NewPaymentCard() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setIsSubmitting(true)
 
     try {
       // Zod validation
@@ -138,6 +142,8 @@ export function NewPaymentCard() {
       } else {
         console.error('Unexpected Error:', error)
       }
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -271,7 +277,12 @@ export function NewPaymentCard() {
             )}
           </div>
           <CardFooter>
-            <Button type="submit">Confirm Payment</Button>
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <Loader2 className="animate-spin mr-2 h-4 w-4" />
+              ) : null}
+              Confirm Payment
+            </Button>
           </CardFooter>
         </form>
       </CardContent>

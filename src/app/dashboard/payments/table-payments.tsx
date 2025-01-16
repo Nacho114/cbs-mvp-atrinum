@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import { SelectPayment } from '@/lib/db/schema/payments'
 import { formatDate, formatValue } from '@/lib/utils'
 import { useCurrentAccount } from '../dashboard-state-provider'
+import { PaymentInfoDialog } from './payment-info-dialog'
 
 export function TablePayments({ payments }: { payments: SelectPayment[] }) {
   const { currentAccount } = useCurrentAccount()
@@ -23,6 +24,7 @@ export function TablePayments({ payments }: { payments: SelectPayment[] }) {
           <TableHead>Description</TableHead>
           <TableHead className="text-right">Amount</TableHead>
           <TableHead>Status</TableHead>
+          <TableHead>Action</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -35,6 +37,9 @@ export function TablePayments({ payments }: { payments: SelectPayment[] }) {
             </TableCell>
             <TableCell>
               <Badge variant="secondary">{payment.paymentStatus}</Badge>
+            </TableCell>
+            <TableCell>
+              <PaymentInfoDialog payment={payment} />
             </TableCell>
           </TableRow>
         ))}

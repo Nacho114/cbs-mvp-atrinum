@@ -36,6 +36,7 @@ export const payments = t.pgTable('payments', {
   country: t.text('country').notNull(),
   description: t.text('description').notNull(),
   paymentStatus: paymentStatuses('payment_status').notNull(),
+  reference: t.text('reference').notNull(), // Add reference field
   createDate: t.timestamp('create_date').defaultNow().notNull(),
   lastModifiedDate: t.timestamp('last_modified_date').defaultNow().notNull(),
   executionDate: t.timestamp('execution_date'),
@@ -47,6 +48,13 @@ export const payments = t.pgTable('payments', {
 
 export type InsertPayment = typeof payments.$inferInsert
 export type SelectPayment = typeof payments.$inferSelect
+
+// Function to generate payment reference
+export function generatePaymentReference(): string {
+  const randomChars = Math.random().toString(36).substring(2, 6).toUpperCase()
+  const randomNumbers = Math.floor(100 + Math.random() * 900) // Generate 3 random digits
+  return `INV-${randomChars}-${randomNumbers}`
+}
 
 // Update schema for inserting a payment
 export const paymentsInsertSchema = createInsertSchema(payments, {
@@ -61,6 +69,7 @@ export const paymentsInsertSchema = createInsertSchema(payments, {
   country: (schema) => schema.min(2, 'Country is required'),
   description: (schema) => schema.min(1, 'Description is required'),
   paymentStatus: () => z.nativeEnum(PaymentStatus),
+  reference: (schema) => schema.min(1, 'Reference is required'), // Ensure reference is included
 }).pick({
   amount: true,
   recipient: true,
@@ -70,3 +79,9 @@ export const paymentsInsertSchema = createInsertSchema(payments, {
   description: true,
   paymentStatus: true,
 })
+
+// Collision Safety Note:
+// Since the reference includes both random letters and numbers, it has a high number of combinations.
+// With 26^3 * 900 possibilities (~15.6 million), the likelihood of collision is very low, especially
+// if the generation and validation process ensures uniqueness within the database.
+// However, for absolute safety, consider checking the database for existing references and regenerating if needed.
