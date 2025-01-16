@@ -6,7 +6,6 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardFooter,
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -19,12 +18,14 @@ import {
   SelectItem,
 } from '@/components/ui/select'
 import { Loader2 } from 'lucide-react'
-import { paymentsInsertSchema } from '@/lib/db/schema/payments'
-import { useCurrentAccount, usePayments } from '../dashboard-state-provider'
+import {
+  InsertPayment,
+  paymentsInsertSchema,
+  PaymentStatus,
+} from '@/lib/db/schema/payments'
+import { useCurrentAccount } from '../dashboard-state-provider'
 import { z } from 'zod'
-import { createPayment } from './actions'
-import { getPayments } from '../actions'
-import { simpleToast } from '@/lib/utils'
+import { ConfirmPaymentDialog } from './confirm-payment-dialog'
 
 const countryOptions = [
   'Germany',
@@ -73,9 +74,14 @@ export function NewPaymentCard() {
   })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [open, setOpen] = useState(false)
+
+  const [formPayment, setFormPayment] = useState<Partial<InsertPayment> | null>(
+    null,
+  )
 
   const { currentAccount } = useCurrentAccount()
-  const { setPayments } = usePayments()
+  // const { setPayments } = usePayments()
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target
@@ -101,28 +107,11 @@ export function NewPaymentCard() {
         swiftBic: formData.swiftBic,
         country: formData.country,
         description: formData.description,
-        paymentStatus: 'pending', // Default status
+        paymentStatus: PaymentStatus.Pending, // Default status
       })
 
-      const response = await createPayment(validatedData, currentAccount)
-
-      if (response.success) {
-        const newPayments = await getPayments()
-        if (newPayments) {
-          setPayments(newPayments)
-        }
-        simpleToast(response) // Send toast on success
-        setFormData({
-          recipient: '',
-          amount: '',
-          iban: '',
-          swiftBic: '',
-          country: 'Germany',
-          description: '',
-        }) // Reset form
-      } else {
-        simpleToast(response)
-      }
+      setFormPayment(validatedData)
+      setOpen(true)
     } catch (error) {
       if (error instanceof z.ZodError) {
         const fieldErrors = {
@@ -150,7 +139,7 @@ export function NewPaymentCard() {
   return (
     <Card className="max-w-md mx-auto">
       <CardHeader>
-        <CardTitle>New Payment</CardTitle>
+        <CardTitle>Payment Information</CardTitle>
         <CardDescription>
           Enter the details for the new payment below. Click confirm when you’re
           done.
@@ -276,16 +265,21 @@ export function NewPaymentCard() {
               <p className="text-red-500 text-sm col-span-4">{errors.amount}</p>
             )}
           </div>
-          <CardFooter>
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? (
-                <Loader2 className="animate-spin mr-2 h-4 w-4" />
-              ) : null}
-              Confirm Payment
-            </Button>
-          </CardFooter>
+          <Button type="submit" className="w-full" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <Loader2 className="animate-spin mr-2 h-4 w-4" />
+            ) : null}
+            Submit Payment
+          </Button>
         </form>
       </CardContent>
+      {formPayment && (
+        <ConfirmPaymentDialog
+          payment={formPayment}
+          setOpen={setOpen}
+          open={open}
+        />
+      )}
     </Card>
   )
 }
