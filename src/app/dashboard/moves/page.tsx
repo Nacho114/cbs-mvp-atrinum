@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { ChevronDown, ChevronUp, ScrollText, FileText } from 'lucide-react'
+import { ChevronDown, ChevronUp, ScrollText } from 'lucide-react'
 import { useAccounts, useMoves } from '../dashboard-state-provider'
 import { MoveStatus, SelectAccount, SelectMove } from '@/lib/db/schema'
 import { TableFutureMoves } from './table-future-moves'
@@ -56,11 +56,6 @@ export default function MovesPage() {
     (move) => move.moveStatus !== MoveStatus.Pending,
   )
 
-  const handleDownload = () => {
-    // Placeholder for download logic
-    console.log('Download moves history')
-  }
-
   return (
     <>
       {/* Top Section */}
@@ -101,14 +96,6 @@ export default function MovesPage() {
         <Card>
           <div className="flex items-center justify-between px-4 py-3 border-b">
             <h4 className="text-sm font-medium">Moves History</h4>
-            <Button
-              variant="secondary"
-              className="flex items-center gap-x-2 text-sm"
-              onClick={handleDownload}
-            >
-              <FileText className="h-5 w-5" />
-              Download
-            </Button>
           </div>
 
           <CardContent>

@@ -12,7 +12,9 @@ import { Button } from '@/components/ui/button'
 import { Loader2 } from 'lucide-react'
 import { formatValue, simpleToast } from '@/lib/utils'
 import { InsertMove } from '@/lib/db/schema/moves'
-import { useAccounts } from '../dashboard-state-provider'
+import { useAccounts, useMoves } from '../dashboard-state-provider'
+import { getMoves } from '../actions'
+import { useRouter } from 'next/navigation'
 
 export function ConfirmMoveDialog({
   move,
@@ -25,10 +27,14 @@ export function ConfirmMoveDialog({
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false) // Loading state
 
+  const { setMoves } = useMoves()
+
   const { accounts } = useAccounts()
 
   const fromAccount = accounts.find((acc) => acc.id === move.fromAccount)
   const toAccount = accounts.find((acc) => acc.id === move.destinationAccount)
+
+  const router = useRouter()
 
   if (!fromAccount || !toAccount) {
     simpleToast({
@@ -45,6 +51,11 @@ export function ConfirmMoveDialog({
       const response = await createMove(move)
 
       if (response.success) {
+        const newMoves = await getMoves()
+        if (newMoves) {
+          setMoves(newMoves)
+        }
+        router.push('/dashboard/moves')
         simpleToast(response) // Send toast on success
         setOpen(false) // Close dialog
       } else {

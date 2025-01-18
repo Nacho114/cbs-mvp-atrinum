@@ -9,6 +9,7 @@ import {
 import { formatDate, formatValue } from '@/lib/utils'
 import { X } from 'lucide-react'
 import { AugmentedMove } from './page'
+import { Badge } from '@/components/ui/badge'
 
 function handleCancel(move: AugmentedMove): void {
   console.log({ move })
@@ -23,6 +24,7 @@ export function TableFutureMoves({ moves }: { moves: AugmentedMove[] }) {
           <TableHead>From</TableHead>
           <TableHead>To</TableHead>
           <TableHead className="text-right">Amount</TableHead>
+          <TableHead className="text-right">Status</TableHead>
           <TableHead className="text-center">Action</TableHead>
         </TableRow>
       </TableHeader>
@@ -35,6 +37,9 @@ export function TableFutureMoves({ moves }: { moves: AugmentedMove[] }) {
               <TableCell>{move.toAccountInfo.name}</TableCell>
               <TableCell className="text-right">
                 {formatValue(move.amount, move.fromAccountInfo.currency)}
+              </TableCell>
+              <TableCell className="text-right">
+                <Badge variant="secondary">{move.moveStatus}</Badge>
               </TableCell>
               <TableCell className="text-center">
                 <button
