@@ -29,7 +29,7 @@ export function TableFuturePayments({
           <TableHead>Date</TableHead>
           <TableHead>Description</TableHead>
           <TableHead className="text-right">Amount</TableHead>
-          <TableHead>Status</TableHead>
+          <TableHead className="text-right">Status</TableHead>
           <TableHead className="text-center">Action</TableHead>
         </TableRow>
       </TableHeader>
@@ -41,7 +41,7 @@ export function TableFuturePayments({
             <TableCell className="text-right">
               {formatValue(payment.amount, currentAccount.currency)}
             </TableCell>
-            <TableCell>
+            <TableCell className="text-right">
               <Badge variant="secondary">{payment.paymentStatus}</Badge>
             </TableCell>
             <TableCell className="text-center">
