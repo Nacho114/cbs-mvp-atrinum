@@ -8,11 +8,12 @@ import React, {
   ReactNode,
 } from 'react'
 import { useRouter } from 'next/navigation'
-import { getPayments, getAccounts, getProfile } from './actions'
+import { getPayments, getAccounts, getProfile, getMoves } from './actions'
 import { SelectProfile } from '@/lib/db/schema/profiles'
 import { SelectAccount } from '@/lib/db/schema/accounts'
-import { toast } from '@/hooks/use-toast'
 import { SelectPayment } from '@/lib/db/schema/payments'
+import { SelectMove } from '@/lib/db/schema/moves'
+import { toast } from '@/hooks/use-toast'
 
 // Context types
 interface ProfileContextType {
@@ -35,6 +36,11 @@ interface CurrentAccountContextType {
   setCurrentAccount: React.Dispatch<React.SetStateAction<SelectAccount>>
 }
 
+interface MovesContextType {
+  moves: SelectMove[]
+  setMoves: React.Dispatch<React.SetStateAction<SelectMove[]>>
+}
+
 // Create contexts
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined)
 const PaymentsContext = createContext<PaymentsContextType | undefined>(
@@ -46,6 +52,7 @@ const AccountsContext = createContext<AccountsContextType | undefined>(
 const CurrentAccountContext = createContext<
   CurrentAccountContextType | undefined
 >(undefined)
+const MovesContext = createContext<MovesContextType | undefined>(undefined)
 
 // Custom hooks for context access
 export function useProfile(): ProfileContextType {
@@ -82,6 +89,14 @@ export function useCurrentAccount(): CurrentAccountContextType {
   return context
 }
 
+export function useMoves(): MovesContextType {
+  const context = useContext(MovesContext)
+  if (!context) {
+    throw new Error('useMoves must be used within a MovesProvider')
+  }
+  return context
+}
+
 // AppStateProvider implementation
 export function DashboardStateProvider({ children }: { children: ReactNode }) {
   // TODO: Medium null! This is not safe but a quick dirty solution for types
@@ -89,16 +104,19 @@ export function DashboardStateProvider({ children }: { children: ReactNode }) {
   const [currentAccount, setCurrentAccount] = useState<SelectAccount>(null!)
   const [payments, setPayments] = useState<SelectPayment[]>([])
   const [accounts, setAccounts] = useState<SelectAccount[]>([])
+  const [moves, setMoves] = useState<SelectMove[]>([])
   const router = useRouter()
 
   useEffect(() => {
     async function fetchData() {
       // TODO: Not safe way to do this
-      const [profileData, paymentsData, accountsData] = await Promise.all([
-        getProfile(),
-        getPayments(),
-        getAccounts(),
-      ])
+      const [profileData, paymentsData, accountsData, movesData] =
+        await Promise.all([
+          getProfile(),
+          getPayments(),
+          getAccounts(),
+          getMoves(),
+        ])
 
       if (!profileData || profileData.length === 0) {
         router.push('/create-profile')
@@ -114,6 +132,7 @@ export function DashboardStateProvider({ children }: { children: ReactNode }) {
       setProfile(profileData[0])
       setPayments(paymentsData!)
       setAccounts(accountsData)
+      setMoves(movesData!)
       if (accountsData.length > 0) {
         setCurrentAccount(accountsData[0])
       }
@@ -134,7 +153,9 @@ export function DashboardStateProvider({ children }: { children: ReactNode }) {
           <CurrentAccountContext.Provider
             value={{ currentAccount, setCurrentAccount }}
           >
-            {children}
+            <MovesContext.Provider value={{ moves, setMoves }}>
+              {children}
+            </MovesContext.Provider>
           </CurrentAccountContext.Provider>
         </AccountsContext.Provider>
       </PaymentsContext.Provider>

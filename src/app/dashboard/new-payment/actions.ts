@@ -23,8 +23,6 @@ export async function createPayment(
       const { recipient, amount, iban, swiftBic, country, description } =
         paymentsInsertSchema.parse(data)
 
-      console.log({ data })
-      // Get the authenticated user
       const user = await getUser()
       if (!user) throw new Error('User not found')
 

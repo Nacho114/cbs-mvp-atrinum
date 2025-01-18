@@ -43,6 +43,13 @@
       "when": 1737027631854,
       "tag": "0005_curious_toad",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1737105766110,
+      "tag": "0006_medical_jackpot",
+      "breakpoints": true
     }
   ]
 }

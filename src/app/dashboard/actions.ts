@@ -9,6 +9,7 @@ import { eq } from 'drizzle-orm'
 import { executeQuery } from '@/lib/db/utils/executeQuery'
 import { accounts } from '@/lib/db/schema/accounts'
 import { payments } from '@/lib/db/schema/payments'
+import { moves } from '@/lib/db/schema'
 
 export async function signOut() {
   return executeAction({
@@ -63,5 +64,19 @@ export async function getPayments() {
     },
     isProtected: true, // Ensure the user is authenticated
     serverErrorMessage: 'Error reading payments',
+  })
+}
+
+export async function getMoves() {
+  return executeQuery({
+    queryFn: async () => {
+      const user = await getUser()
+
+      if (!user) throw new Error('User not found')
+
+      return db.select().from(moves).where(eq(moves.userId, user.id))
+    },
+    isProtected: true, // Ensure the user is authenticated
+    serverErrorMessage: 'Error reading moves',
   })
 }

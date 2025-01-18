@@ -1,4 +1,10 @@
-import { ArrowRightLeft, Banknote, Home, Shuffle } from 'lucide-react'
+import {
+  ArrowRightLeft,
+  Banknote,
+  DollarSign,
+  Home,
+  Shuffle,
+} from 'lucide-react'
 import Link from 'next/link'
 
 import {
@@ -28,11 +34,15 @@ const items = [
     url: '/dashboard/new-payment',
     icon: Banknote,
   },
-
   {
-    title: 'Move',
-    url: '/dashboard/move',
+    title: 'Moves',
+    url: '/dashboard/moves',
     icon: Shuffle,
+  },
+  {
+    title: 'New Move',
+    url: '/dashboard/new-move',
+    icon: DollarSign,
   },
 ]
 

@@ -8,26 +8,54 @@ Domain name dependent settings:
 the site domain name
 2. There is a secret with the URL
 
-## **Updating the DB**
+### **Steps to Update the DB Schema**
 
-> **DO NOT UPDATE THE DB SCHEMA MANUALLY IN SUPABASE**
+#### 1. **Add the New Schema File**
+Create a new TypeScript file in the `schema` folder for the new database table or entity. For example:
+- `orders.ts` for a new `orders` table.
 
-Follow these steps for updating the database schema:
+Define the schema for this table within the file using Drizzle's schema definition syntax.
 
-1. Change the Drizzle schema file (`schema.ts`).
-2. Run:
-   ```bash
-   npm run db:generate
-   ```
-3. Inspect the generated SQL migration file to ensure correctness.
-4. Push the migration:
-   ```bash
-   npm run db:push
-   ```
+#### 2. **Update the `index.ts` File**
+In the `schema/index.ts` file, ensure the new schema is exported. This allows Drizzle to include it when generating migrations. Update it like so:
+```typescript
+// schema/index.ts
+export * from './accounts';
+export * from './payments';
+export * from './profiles';
+export * from './orders'; // Add your new schema file here
+```
 
-To revert, simply go back to step 1 and adjust the schema accordingly.
+#### 3. **Generate the Migration**
+Run the following command to generate a new SQL migration based on the updated schema:
+```bash
+npm run db:generate
+```
+This will scan your schema files and create a migration file reflecting the changes in the database structure.
+
+#### 4. **Inspect the Migration File**
+Open the generated SQL file in the migrations folder to review the proposed changes. Ensure they align with your intentions (e.g., new table creation, column additions, etc.).
+
+#### 5. **Apply the Migration**
+Push the migration to the database:
+```bash
+npm run db:push
+```
+This will execute the migration and update your database schema in Supabase.
 
 ---
+
+### **Why Use `index.ts` for Exports?**
+The `index.ts` file acts as a central hub, consolidating and organizing all your schema files. Instead of manually including every schema file in your migration or application logic, you can simply reference the `index.ts` file, which aggregates all the exports. This keeps your code clean and reduces duplication or missed inclusions.
+
+---
+
+### **Benefits of This Approach**
+1. **Modularity:** Each schema has its own file, making it easy to locate and update.
+2. **Scalability:** Adding a new table only requires updating the `schema` folder and `index.ts`.
+3. **Error Reduction:** Centralized exports minimize the risk of forgetting to include a schema file during migration generation.
+
+Let me know if you’d like further clarification!---
 
 ## **Supabase**
 
