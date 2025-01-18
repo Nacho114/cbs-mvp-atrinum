@@ -41,7 +41,7 @@ function buildAugmentedMoves(
 }
 
 export default function MovesPage() {
-  const [showFutureMoves, setShowFutureMoves] = useState(false)
+  const [showFutureMoves, setShowFutureMoves] = useState(true)
 
   const { accounts } = useAccounts()
   const { moves } = useMoves()

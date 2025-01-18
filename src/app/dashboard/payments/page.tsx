@@ -14,7 +14,7 @@ import { PaymentStatus } from '@/lib/db/schema/payments'
 import { downloadTable } from './generate-pdf-table'
 
 export default function PaymentsPage() {
-  const [showFuturePayments, setShowFuturePayments] = useState(false)
+  const [showFuturePayments, setShowFuturePayments] = useState(true)
 
   const { payments } = usePayments()
   const { currentAccount } = useCurrentAccount()

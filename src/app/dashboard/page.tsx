@@ -1,7 +1,7 @@
 'use client'
 
 import { Badge } from '@/components/ui/badge'
-import BankingOverview from './banking-overview-card'
+import OverviewCard from './overview-card'
 
 export default function DashboardPage() {
   return (
@@ -11,7 +11,7 @@ export default function DashboardPage() {
           Overview
         </Badge>
       </div>
-      <BankingOverview />
+      <OverviewCard />
     </div>
   )
 }

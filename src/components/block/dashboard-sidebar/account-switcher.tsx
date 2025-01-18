@@ -30,11 +30,9 @@ export function AccountSwitcher() {
   const { currentAccount, setCurrentAccount } = useCurrentAccount()
 
   const { isMobile } = useSidebar()
-  const [activeAccount, setActiveAccount] = React.useState(currentAccount!)
 
   // Function to handle account switching
   const handleAccountSwitch = (account: SelectAccount) => {
-    setActiveAccount(account) // Update local state
     setCurrentAccount(account) // Update global context
   }
 
@@ -49,10 +47,10 @@ export function AccountSwitcher() {
             >
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">
-                  {activeAccount.name}
+                  {currentAccount?.name || 'Select an Account'}
                 </span>
                 <span className="truncate text-xs">
-                  {activeAccount.currency}
+                  {currentAccount?.currency || ''}
                 </span>
               </div>
               <ChevronsUpDown className="ml-auto" />
@@ -71,7 +69,9 @@ export function AccountSwitcher() {
               <DropdownMenuItem
                 key={account.id}
                 onClick={() => handleAccountSwitch(account)}
-                className="flex justify-between items-center gap-2 p-2 cursor-pointer"
+                className={`flex justify-between items-center gap-2 p-2 cursor-pointer ${
+                  currentAccount?.id === account.id ? 'bg-gray-200' : ''
+                }`}
               >
                 <span>{account.name}</span>
                 <span className="text-sm text-gray-500">
