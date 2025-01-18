@@ -23,7 +23,7 @@ export function downloadTable(
   // Map payments to table rows
   const rows = payments.map((payment) => [
     payment.createDate.toISOString().split('T')[0], // Format createDate as YYYY-MM-DD
-    payment.destinationName, // Destination Name
+    payment.recipient, // Destination Name
     formatValue(payment.amount, account.currency), // Format amount with currency
   ])
 
