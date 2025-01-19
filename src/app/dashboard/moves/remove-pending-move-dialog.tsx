@@ -8,35 +8,35 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { SelectPayment } from '@/lib/db/schema'
-import { removePendingPayment } from './actions'
+import { SelectMove } from '@/lib/db/schema'
+import { removePendingMove } from './actions'
 import { toast } from '@/hooks/use-toast'
-import { usePayments } from '../dashboard-state-provider'
-import { getPayments } from '../actions'
+import { useMoves } from '../dashboard-state-provider'
+import { getMoves } from '../actions'
 
-export function RemovePendingPaymentDialog({
+export function RemovePendingMoveDialog({
   isOpen,
-  payment,
+  move,
   onCancel,
   title,
   description,
 }: {
   isOpen: boolean
-  payment: SelectPayment
+  move: SelectMove
   onCancel: () => void
   title: string
   description: string
 }) {
-  const { setPayments } = usePayments()
+  const { setMoves } = useMoves()
   const handleConfirm = async () => {
-    const response = await removePendingPayment(payment)
+    const response = await removePendingMove(move)
     if (response.success) {
       toast({ description: response.message })
 
       //TODO: How to make this safe
-      const newPayments = await getPayments()
-      if (newPayments) {
-        setPayments(newPayments)
+      const newMoves = await getMoves()
+      if (newMoves) {
+        setMoves(newMoves)
       }
     } else {
       toast({ variant: 'destructive', description: response.message })

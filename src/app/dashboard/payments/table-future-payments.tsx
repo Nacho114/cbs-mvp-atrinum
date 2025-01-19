@@ -14,7 +14,7 @@ import { SelectPayment } from '@/lib/db/schema/payments'
 import { formatDate, formatValue } from '@/lib/utils'
 import { X } from 'lucide-react'
 import { useCurrentAccount } from '../dashboard-state-provider'
-import { AlertDialog } from './remove-pending-payment-dialog'
+import { RemovePendingPaymentDialog } from './remove-pending-payment-dialog'
 
 export function TableFuturePayments({
   payments,
@@ -74,7 +74,7 @@ export function TableFuturePayments({
       </Table>
 
       {isDialogOpen && selectedPayment && (
-        <AlertDialog
+        <RemovePendingPaymentDialog
           isOpen={isDialogOpen}
           onCancel={handleCancelDialog}
           payment={selectedPayment} // Pass the selected payment as a prop
