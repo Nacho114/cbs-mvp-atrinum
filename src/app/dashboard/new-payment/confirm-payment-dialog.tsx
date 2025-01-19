@@ -30,7 +30,7 @@ export function ConfirmPaymentDialog({
   const { setPayments } = usePayments()
   const [isSubmitting, setIsSubmitting] = useState(false) // Loading state
 
- const handleSubmit = async () => {
+  const handleSubmit = async () => {
     setIsSubmitting(true) // Start loading
     try {
       const response = await createPayment(payment, currentAccount)
