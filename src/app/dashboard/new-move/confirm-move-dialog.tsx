@@ -128,7 +128,7 @@ export function ConfirmMoveDialog({
             <div className="grid grid-cols-3 items-center gap-4">
               <span className="font-semibold">Total:</span>
               <span className="col-span-2 truncate">
-                {formatValue(move.amount - move.fee, toAccount.currency)}
+                {formatValue(move.amountMoved!, toAccount.currency)}
               </span>
             </div>
           )}

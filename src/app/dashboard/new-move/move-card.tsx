@@ -73,6 +73,10 @@ export function MoveCard({ accounts }: MoveCardProps) {
 
   const validateMove = async () => {
     setIsSubmitting(true)
+
+    //TODO: Unsafe ! casting
+    const amountMoved = parseFloat(amount) * exchangeRate - fee
+
     try {
       const validatedData = movesInsertSchema.parse({
         userId: fromAccount?.userId,
@@ -82,6 +86,7 @@ export function MoveCard({ accounts }: MoveCardProps) {
         exchangeRate,
         fee,
         moveStatus: 'Pending',
+        amountMoved,
       })
 
       setFormMove(validatedData)

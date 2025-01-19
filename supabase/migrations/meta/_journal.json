@@ -50,6 +50,13 @@
       "when": 1737105766110,
       "tag": "0006_medical_jackpot",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1737296763791,
+      "tag": "0007_quick_wallop",
+      "breakpoints": true
     }
   ]
 }

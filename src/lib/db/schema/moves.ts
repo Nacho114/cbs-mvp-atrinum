@@ -32,6 +32,7 @@ export const moves = t.pgTable('moves', {
     .references(() => accounts.id, { onDelete: 'cascade' })
     .notNull(),
   amount: t.doublePrecision().notNull(),
+  amountMoved: t.doublePrecision().notNull(),
   exchangeRate: t.doublePrecision().notNull(),
   fee: t.doublePrecision().default(0).notNull(),
   createDate: t.timestamp('create_date').defaultNow().notNull(),
@@ -66,4 +67,5 @@ export const movesInsertSchema = createInsertSchema(moves, {
   amount: true,
   exchangeRate: true,
   fee: true,
+  amountMoved: true,
 })

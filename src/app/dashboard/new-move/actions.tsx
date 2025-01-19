@@ -16,8 +16,14 @@ export async function createMove(data: Partial<InsertMove>) {
   return executeAction({
     actionFn: async () => {
       // Validate input data using the schema
-      const { fromAccount, destinationAccount, amount, exchangeRate, fee } =
-        movesInsertSchema.parse(data)
+      const {
+        fromAccount,
+        destinationAccount,
+        amount,
+        exchangeRate,
+        fee,
+        amountMoved,
+      } = movesInsertSchema.parse(data)
 
       // Get the authenticated user
       const user = await getUser()
@@ -32,6 +38,7 @@ export async function createMove(data: Partial<InsertMove>) {
         amount,
         exchangeRate,
         fee,
+        amountMoved,
         moveStatus: MoveStatus.Pending,
         reference: generateMoveReference(),
         lastModifiedBy: user.id,
