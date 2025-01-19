@@ -12,7 +12,7 @@
         "db:push": "supabase db push"
     },
     "lint-staged": {
-        "src/**/*.{js,jsx,ts,tsx} --jsx": "npm run lint"
+        "src/**/*.{js,jsx,ts,tsx}": "npm run lint"
     },
     "dependencies": {
         "@hookform/resolvers": "^3.10.0",

@@ -35,8 +35,8 @@ export function TableFutureMoves({ moves }: { moves: AugmentedMove[] }) {
         <TableHeader>
           <TableRow>
             <TableHead>Date</TableHead>
-            <TableHead>Amount</TableHead>
             <TableHead>From</TableHead>
+            <TableHead>Amount</TableHead>
             <TableHead>To</TableHead>
             <TableHead>Amount Moved</TableHead>
             <TableHead className="text-right">Status</TableHead>
@@ -53,7 +53,7 @@ export function TableFutureMoves({ moves }: { moves: AugmentedMove[] }) {
               </TableCell>
               <TableCell>{move.toAccountInfo.name}</TableCell>
               <TableCell>
-                {formatValue(move.amountMoved, move.fromAccountInfo.currency)}
+                {formatValue(move.amountMoved, move.toAccountInfo.currency)}
               </TableCell>
               <TableCell className="text-right">
                 <Badge variant="secondary">{move.moveStatus}</Badge>
