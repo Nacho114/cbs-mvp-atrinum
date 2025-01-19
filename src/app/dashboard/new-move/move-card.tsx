@@ -180,7 +180,7 @@ export function MoveCard({ accounts }: MoveCardProps) {
             </div>
           </div>
 
-          {calculatedValue !== null && toAccount && (
+          {calculatedValue !== null && toAccount && fromAccount && (
             <div className="grid gap-4 mt-4">
               <h2 className="text-lg font-bold text-black mb-2">
                 Exchange Details
@@ -189,7 +189,7 @@ export function MoveCard({ accounts }: MoveCardProps) {
                 <div className="flex justify-between">
                   <span>Amount to Exchange:</span>
                   <span>
-                    {formatValue(safeParseAmount(amount), toAccount.currency)}
+                    {formatValue(safeParseAmount(amount), fromAccount.currency)}
                   </span>
                 </div>
 
