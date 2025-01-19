@@ -9,8 +9,7 @@
         "lint": "next lint && tsc --noEmit",
         "format": "prettier --write .",
         "db:generate": "drizzle-kit generate",
-        "db:push": "supabase db push",
-        "prepare": "husky install"
+        "db:push": "supabase db push"
     },
     "lint-staged": {
         "*.{js,jsx,ts,tsx}": "npm run lint"
