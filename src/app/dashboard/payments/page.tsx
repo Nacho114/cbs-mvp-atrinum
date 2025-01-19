@@ -2,7 +2,13 @@
 
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ChevronDown, ChevronUp, ScrollText, FileText } from 'lucide-react'
+import {
+  ChevronDown,
+  ChevronUp,
+  ScrollText,
+  FileText,
+  Plus,
+} from 'lucide-react'
 import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { TableFuturePayments } from './table-future-payments'
@@ -13,8 +19,10 @@ import {
 } from '@/app/dashboard/dashboard-state-provider'
 import { PaymentStatus } from '@/lib/db/schema/payments'
 import { downloadTable } from './generate-pdf-table'
+import { useRouter } from 'next/navigation'
 
 export default function PaymentsPage() {
+  const router = useRouter()
   const [showFuturePayments, setShowFuturePayments] = useState(true)
 
   const { payments } = usePayments()
@@ -39,10 +47,18 @@ export default function PaymentsPage() {
   return (
     <>
       {/* Top Section */}
-      <div className="flex justify-between items-start mb-6 px-4">
+      <div className="flex justify-between items-center mb-6 px-4">
         <Badge variant="outline" className="text-lg font-semibold px-4 py-1">
           Payments
         </Badge>
+        <Button
+          variant="secondary"
+          className="flex items-center gap-x-2"
+          onClick={() => router.push('/dashboard/new-payment')}
+        >
+          <Plus className="h-4 w-4" />
+          New Payment
+        </Button>
       </div>
 
       {/* Future Payments Section in ShadCN Card */}

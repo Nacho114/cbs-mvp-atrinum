@@ -8,7 +8,7 @@ import {
 import { formatValue } from '@/lib/utils'
 import { SelectAccount } from '@/lib/db/schema'
 
-export default function BankingOverview() {
+export default function AccountsCard() {
   const { accounts } = useAccounts()
   const { currentAccount, setCurrentAccount } = useCurrentAccount()
 

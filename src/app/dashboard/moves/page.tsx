@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { ChevronDown, ChevronUp, ScrollText } from 'lucide-react'
+import { ChevronDown, ChevronUp, ScrollText, Plus } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useAccounts, useMoves } from '../dashboard-state-provider'
 import { MoveStatus, SelectAccount, SelectMove } from '@/lib/db/schema'
 import { TableFutureMoves } from './table-future-moves'
@@ -41,6 +42,7 @@ function buildAugmentedMoves(
 }
 
 export default function MovesPage() {
+  const router = useRouter()
   const [showFutureMoves, setShowFutureMoves] = useState(true)
 
   const { accounts } = useAccounts()
@@ -59,10 +61,18 @@ export default function MovesPage() {
   return (
     <>
       {/* Top Section */}
-      <div className="flex justify-between items-start mb-6 px-4">
+      <div className="flex justify-between items-center mb-6 px-4">
         <Badge variant="outline" className="text-lg font-semibold px-4 py-1">
           Moves
         </Badge>
+        <Button
+          variant="secondary"
+          className="flex items-center gap-x-2"
+          onClick={() => router.push('/dashboard/new-move')} // Redirects to new move page
+        >
+          <Plus className="h-4 w-4" />
+          New Move
+        </Button>
       </div>
 
       {/* Future Moves Section */}

@@ -2,8 +2,8 @@ import {
   ArrowRightLeft,
   Banknote,
   DollarSign,
-  Home,
   Shuffle,
+  WalletCards,
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -20,9 +20,9 @@ import {
 // Menu items.
 const items = [
   {
-    title: 'Home',
+    title: 'Accounts',
     url: '/dashboard',
-    icon: Home,
+    icon: WalletCards,
   },
   {
     title: 'Payments',
