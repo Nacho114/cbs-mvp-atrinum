@@ -21,6 +21,7 @@ import { movesInsertSchema } from '@/lib/db/schema/moves'
 import { z } from 'zod'
 import { ConfirmMoveDialog } from './confirm-move-dialog'
 import { formatValue } from '@/lib/utils'
+import { getExchangeRate } from '@/lib/currency'
 
 type MoveCardProps = {
   accounts: SelectAccount[]
@@ -47,7 +48,7 @@ export function MoveCard({ accounts }: MoveCardProps) {
 
   useEffect(() => {
     if (fromAccount && toAccount && amount) {
-      const rate = fromAccount.currency === toAccount.currency ? 1 : 0.85 // Replace with actual logic
+      const rate = getExchangeRate(fromAccount.currency, toAccount.currency)
       const value = parseFloat(amount) * rate
       const calculatedFee = value * 0.01 // Example fee (1%)
       const totalValue = value - calculatedFee
