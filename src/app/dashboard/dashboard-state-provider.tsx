@@ -14,6 +14,8 @@ import { SelectAccount } from '@/lib/db/schema/accounts'
 import { SelectPayment } from '@/lib/db/schema/payments'
 import { SelectMove } from '@/lib/db/schema/moves'
 import { toast } from '@/hooks/use-toast'
+import { cn } from '@/lib/utils'
+import { Loader } from 'lucide-react'
 
 // Context types
 interface ProfileContextType {
@@ -141,9 +143,20 @@ export function DashboardStateProvider({ children }: { children: ReactNode }) {
     fetchData()
   }, [router])
 
-  // Return loading state if profile or currentAccount is not set
-  if (profile === null || currentAccount === null) {
-    return <></>
+  // Show a loading spinner while any essential data is not loaded
+  if (
+    profile === null ||
+    currentAccount === null ||
+    accounts === null ||
+    payments === null
+  ) {
+    return (
+      <div className={cn('flex items-center justify-center h-screen w-screen')}>
+        <div className="animate-spin">
+          <Loader size={48} />
+        </div>
+      </div>
+    )
   }
 
   return (
