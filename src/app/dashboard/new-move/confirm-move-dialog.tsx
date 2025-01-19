@@ -96,7 +96,7 @@ export function ConfirmMoveDialog({
 
           {/* Amount */}
           <div className="grid grid-cols-3 items-center gap-4">
-            <span className="font-semibold">Amount:</span>
+            <span className="font-semibold">Amount to Exchange:</span>
             <span className="col-span-2 truncate">
               {formatValue(move.amount!, fromAccount.currency)}
             </span>
@@ -116,7 +116,7 @@ export function ConfirmMoveDialog({
           {/* Fee */}
           {move.fee && (
             <div className="grid grid-cols-3 items-center gap-4">
-              <span className="font-semibold">Fee:</span>
+              <span className="font-semibold">Fee (1%):</span>
               <span className="col-span-2 truncate">
                 {formatValue(move.fee, toAccount.currency)}
               </span>
@@ -126,7 +126,7 @@ export function ConfirmMoveDialog({
           {/* Total */}
           {move.amount && move.fee && (
             <div className="grid grid-cols-3 items-center gap-4">
-              <span className="font-semibold">Total:</span>
+              <span className="font-semibold">Total to Receive:</span>
               <span className="col-span-2 truncate">
                 {formatValue(move.amountMoved!, toAccount.currency)}
               </span>

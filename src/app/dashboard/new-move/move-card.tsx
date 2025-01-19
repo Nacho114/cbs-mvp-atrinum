@@ -72,6 +72,11 @@ export function MoveCard({ accounts }: MoveCardProps) {
     setError(null)
   }
 
+  const safeParseAmount = (amount: string): number => {
+    const parsed = parseFloat(amount)
+    return isNaN(parsed) ? 0 : parsed
+  }
+
   const validateMove = async () => {
     setIsSubmitting(true)
 
@@ -176,25 +181,41 @@ export function MoveCard({ accounts }: MoveCardProps) {
           </div>
 
           {calculatedValue !== null && toAccount && (
-            <div className="grid gap-2 mt-4">
-              <div className="flex justify-between">
-                <span className="font-semibold">Exchange Rate:</span>
-                <span>
-                  {formatValue(1, fromAccount!.currency)} ={' '}
-                  {formatValue(exchangeRate, toAccount.currency)}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-semibold">Value in Destination:</span>
-                <span>{formatValue(calculatedValue, toAccount.currency)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-semibold">Fees:</span>
-                <span>{formatValue(fee, toAccount.currency)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-semibold">Total to Receive:</span>
-                <span>{formatValue(total || 0, toAccount.currency)}</span>
+            <div className="grid gap-4 mt-4">
+              <h2 className="text-lg font-bold text-black mb-2">
+                Exchange Details
+              </h2>
+              <div className="text-sm">
+                <div className="flex justify-between">
+                  <span>Amount to Exchange:</span>
+                  <span>
+                    {formatValue(safeParseAmount(amount), toAccount.currency)}
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Exchange Rate:</span>
+                  <span>
+                    {formatValue(1, fromAccount!.currency)} ={' '}
+                    {formatValue(exchangeRate, toAccount.currency)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-base">Converted Amount:</span>
+                  <span>
+                    {formatValue(calculatedValue, toAccount.currency)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Commission Fee (1%):</span>
+                  <span>{formatValue(fee, toAccount.currency)}</span>
+                </div>
+                <div className="flex justify-between text-lg font-semibold mt-2">
+                  <span>Total to Receive:</span>
+                  <span className="text-base">
+                    {formatValue(total || 0, toAccount.currency)}
+                  </span>
+                </div>
               </div>
             </div>
           )}
