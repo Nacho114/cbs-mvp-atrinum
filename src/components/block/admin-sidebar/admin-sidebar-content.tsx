@@ -1,4 +1,4 @@
-import { ArrowRightLeft, Shuffle, Wallet } from 'lucide-react'
+import { ArrowRightLeft, Shuffle, User2 } from 'lucide-react'
 import Link from 'next/link'
 
 import {
@@ -14,9 +14,9 @@ import {
 // Menu items.
 const items = [
   {
-    title: 'Manage Balance',
-    url: '/admin/manage-balance',
-    icon: Wallet,
+    title: 'Manage users',
+    url: '/admin/manage-users',
+    icon: User2,
   },
 
   {

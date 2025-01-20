@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react'
 import { getPendingMoves } from './actions'
 import { TablePendingMoves } from './table-pending-payments'
 import { PendingMove } from './actions'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
+import { ScrollText } from 'lucide-react'
 
 export type SetPendingMoves = React.Dispatch<
   React.SetStateAction<PendingMove[] | null>
@@ -31,25 +34,43 @@ export default function PendingMovesPage() {
     fetchPendingMoves()
   }, [])
 
-  if (loading) {
-    return <div>Loading...</div>
-  }
-
-  if (error) {
-    return <div>{error}</div>
-  }
-
-  if (!pendingMoves || pendingMoves.length === 0) {
-    return <div>No pending moves available.</div>
-  }
-
   return (
-    <div>
-      Pending moves
-      <TablePendingMoves
-        pendingMoves={pendingMoves}
-        setPendingMoves={setPendingMoves}
-      />
-    </div>
+    <>
+      {/* Top Section */}
+      <div className="flex justify-between items-center mb-6 px-4">
+        <Badge variant="outline" className="text-lg font-semibold px-4 py-1">
+          Pending Moves
+        </Badge>
+      </div>
+
+      {/* Pending Moves Section */}
+      <div className="px-4">
+        <Card>
+          <CardContent>
+            {loading ? (
+              <div className="flex flex-col items-center justify-center text-gray-500">
+                <ScrollText className="h-6 w-6 my-4 animate-spin" />
+                <p>Loading pending moves...</p>
+              </div>
+            ) : error ? (
+              <div className="flex flex-col items-center justify-center text-red-500">
+                <ScrollText className="h-6 w-6 my-4" />
+                <p>{error}</p>
+              </div>
+            ) : pendingMoves && pendingMoves.length > 0 ? (
+              <TablePendingMoves
+                pendingMoves={pendingMoves}
+                setPendingMoves={setPendingMoves}
+              />
+            ) : (
+              <div className="flex flex-col items-center justify-center text-gray-500">
+                <ScrollText className="h-6 w-6 my-4" />
+                <p>No pending moves available</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </>
   )
 }
