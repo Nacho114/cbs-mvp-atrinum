@@ -39,7 +39,9 @@ export function PaymentInfoDialog({ payment }: { payment: SelectPayment }) {
           <div className="grid grid-cols-3 items-center gap-4">
             <span className="font-semibold">Date:</span>
             <span className="col-span-2 truncate">
-              {formatDate(payment.createDate)}
+              {payment.executionDate
+                ? formatDate(payment.executionDate)
+                : 'N/A'}
             </span>
           </div>
           <div className="grid grid-cols-3 items-center gap-4">

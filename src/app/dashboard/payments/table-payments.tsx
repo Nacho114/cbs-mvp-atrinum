@@ -30,7 +30,11 @@ export function TablePayments({ payments }: { payments: SelectPayment[] }) {
       <TableBody>
         {payments.map((payment, index) => (
           <TableRow key={index}>
-            <TableCell>{formatDate(payment.createDate)}</TableCell>
+            <TableCell>
+              {payment.executionDate
+                ? formatDate(payment.executionDate)
+                : 'N/A'}
+            </TableCell>
             <TableCell>{payment.description}</TableCell>
             <TableCell className="text-right">
               {formatValue(payment.amount, currentAccount.currency)}

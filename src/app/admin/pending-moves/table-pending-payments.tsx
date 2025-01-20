@@ -14,11 +14,14 @@ import { formatDate, formatValue } from '@/lib/utils'
 import { PendingMove } from './actions'
 import { Button } from '@/components/ui/button'
 import { ConfirmPendingMoveDialog } from './confirm-pending-move-dialog'
+import { SetPendingMoves } from './page'
 
 export function TablePendingMoves({
   pendingMoves,
+  setPendingMoves,
 }: {
   pendingMoves: PendingMove[]
+  setPendingMoves: SetPendingMoves
 }) {
   const [selectedMove, setSelectedMove] = useState<PendingMove | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -80,6 +83,7 @@ export function TablePendingMoves({
       {selectedMove && (
         <ConfirmPendingMoveDialog
           pendingMove={selectedMove}
+          setPendingMoves={setPendingMoves}
           open={dialogOpen}
           setOpen={setDialogOpen}
         />

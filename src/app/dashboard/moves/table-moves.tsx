@@ -28,7 +28,9 @@ export function TableMoves({ moves }: { moves: AugmentedMove[] }) {
         {moves.map((move, index) => {
           return (
             <TableRow key={index}>
-              <TableCell>{formatDate(move.createDate)}</TableCell>
+              <TableCell>
+                {move.executionDate ? formatDate(move.executionDate) : 'N/A'}
+              </TableCell>
               <TableCell>{move.reference}</TableCell>
               <TableCell>{move.fromAccountInfo.name}</TableCell>
               <TableCell>

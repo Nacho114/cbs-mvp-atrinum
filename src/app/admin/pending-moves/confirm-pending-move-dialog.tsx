@@ -15,25 +15,48 @@ import {
   SelectContent,
   SelectValue,
 } from '@/components/ui/select'
-import { PendingMove } from './actions'
+import {
+  executePendingMove,
+  failPendingMove,
+  getPendingMoves,
+  PendingMove,
+} from './actions'
 import { useState } from 'react'
 import { MoveStatus } from '@/lib/db/schema'
+import { toast } from '@/hooks/use-toast'
+import { SetPendingMoves } from './page'
 
 export function ConfirmPendingMoveDialog({
   pendingMove,
   open,
   setOpen,
+  setPendingMoves,
 }: {
   pendingMove: PendingMove
   open: boolean
   setOpen: (open: boolean) => void
+  setPendingMoves: SetPendingMoves
 }) {
   const [status, setStatus] = useState<MoveStatus.Executed | MoveStatus.Failed>(
     MoveStatus.Executed,
   )
 
-  const handleConfirm = () => {
-    console.log(`Pending move ${pendingMove.moveId} status: ${status}`)
+  const handleConfirm = async () => {
+    const response =
+      status === MoveStatus.Executed
+        ? await executePendingMove(pendingMove)
+        : await failPendingMove(pendingMove)
+
+    if (response.success) {
+      const moves = await getPendingMoves()
+      if (moves) {
+        setPendingMoves(moves)
+      }
+      toast({ description: response.message })
+    } else {
+      toast({ variant: 'destructive', description: response.message })
+    }
+
     setOpen(false) // Close the dialog after confirmation
   }
 
@@ -75,8 +98,8 @@ export function ConfirmPendingMoveDialog({
                 <SelectValue placeholder="Select a status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Executed">Executed</SelectItem>
-                <SelectItem value="Failed">Failed</SelectItem>
+                <SelectItem value={MoveStatus.Executed}>Executed</SelectItem>
+                <SelectItem value={MoveStatus.Failed}>Failed</SelectItem>
               </SelectContent>
             </Select>
           </div>
