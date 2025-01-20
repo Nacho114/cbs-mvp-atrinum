@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { getPendingMoves } from './actions'
-import { TablePendingMoves } from './table-pending-payments'
+import { TablePendingMoves } from './table-pending-moves'
 import { PendingMove } from './actions'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
@@ -60,7 +60,7 @@ export default function PendingMovesPage() {
             ) : pendingMoves && pendingMoves.length > 0 ? (
               <TablePendingMoves
                 pendingMoves={pendingMoves}
-                setPendingMoves={setPendingMoves}
+                setPendingMovesAction={setPendingMoves}
               />
             ) : (
               <div className="flex flex-col items-center justify-center text-gray-500">

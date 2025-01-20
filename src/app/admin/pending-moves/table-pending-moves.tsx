@@ -18,10 +18,10 @@ import { SetPendingMoves } from './page'
 
 export function TablePendingMoves({
   pendingMoves,
-  setPendingMoves,
+  setPendingMovesAction: setPendingMovesAction,
 }: {
   pendingMoves: PendingMove[]
-  setPendingMoves: SetPendingMoves
+  setPendingMovesAction: SetPendingMoves
 }) {
   const [selectedMove, setSelectedMove] = useState<PendingMove | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -83,7 +83,7 @@ export function TablePendingMoves({
       {selectedMove && (
         <ConfirmPendingMoveDialog
           pendingMove={selectedMove}
-          setPendingMoves={setPendingMoves}
+          setPendingMoves={setPendingMovesAction}
           open={dialogOpen}
           setOpen={setDialogOpen}
         />
