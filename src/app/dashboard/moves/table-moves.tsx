@@ -38,7 +38,7 @@ export function TableMoves({ moves }: { moves: AugmentedMove[] }) {
               </TableCell>
               <TableCell>{move.toAccountInfo.name}</TableCell>
               <TableCell>
-                {formatValue(move.amountMoved, move.fromAccountInfo.currency)}
+                {formatValue(move.amountMoved, move.toAccountInfo.currency)}
               </TableCell>
               <TableCell className="text-right">
                 <Badge variant="secondary">{move.moveStatus}</Badge>
