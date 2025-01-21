@@ -21,12 +21,25 @@ import {
   executePendingPayment,
   failPendingPayment,
   getPendingPayments,
+  insertPaymentConfirmation,
   PendingPayment,
 } from './actions'
 import { useState } from 'react'
 import { PaymentStatus } from '@/lib/db/schema'
 import { toast } from '@/hooks/use-toast'
 import { SetPendingPayments } from './page'
+import { Input } from '@/components/ui/input'
+import { createClient } from '@/lib/supabase/client'
+
+function generateRandomString(length: number = 10): string {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+  let result = ''
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length)
+    result += characters[randomIndex]
+  }
+  return result
+}
 
 export function ConfirmPendingPaymentDialog({
   pendingPayment,
@@ -42,12 +55,48 @@ export function ConfirmPendingPaymentDialog({
   const [status, setStatus] = useState<
     PaymentStatus.Executed | PaymentStatus.Failed
   >(PaymentStatus.Executed)
+  const [file, setFile] = useState<File | null>(null)
 
-  const handleConfirm = async () => {
-    const response =
-      status === PaymentStatus.Executed
-        ? await executePendingPayment(pendingPayment)
-        : await failPendingPayment(pendingPayment)
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const uploadedFile = event.target.files?.[0] || null
+    setFile(uploadedFile)
+  }
+
+  const supabase = createClient()
+
+  const handleExecute = async () => {
+    console.log('1....')
+    if (!file) {
+      toast({
+        variant: 'destructive',
+        description: 'File is required for execution.',
+      })
+      return
+    }
+
+    const fileExt = file.name.split('.').pop()
+    const filePath = `payment-confirmation-${generateRandomString()}.${fileExt}`
+    const bucketName = 'files'
+
+    const { error: uploadError } = await supabase.storage
+      .from(bucketName)
+      .upload(filePath, file)
+
+    if (uploadError) {
+      console.log(uploadError)
+      throw uploadError
+    } else {
+      const res = await insertPaymentConfirmation(
+        bucketName,
+        filePath,
+        pendingPayment.paymentId,
+      )
+      if (!res.success) {
+        toast({ variant: 'destructive', description: res.message })
+      }
+    }
+
+    const response = await executePendingPayment(pendingPayment)
 
     if (response.success) {
       const payments = await getPendingPayments()
@@ -59,7 +108,31 @@ export function ConfirmPendingPaymentDialog({
       toast({ variant: 'destructive', description: response.message })
     }
 
-    setOpen(false) // Close the dialog after confirmation
+    setOpen(false)
+  }
+
+  const handleFailed = async () => {
+    const response = await failPendingPayment(pendingPayment)
+
+    if (response.success) {
+      const payments = await getPendingPayments()
+      if (payments) {
+        setPendingPayments(payments)
+      }
+      toast({ description: response.message })
+    } else {
+      toast({ variant: 'destructive', description: response.message })
+    }
+
+    setOpen(false)
+  }
+
+  const handleConfirm = async () => {
+    if (status === PaymentStatus.Executed) {
+      await handleExecute()
+    } else if (status === PaymentStatus.Failed) {
+      await handleFailed()
+    }
   }
 
   return (
@@ -105,12 +178,34 @@ export function ConfirmPendingPaymentDialog({
               </SelectContent>
             </Select>
           </div>
+          {status === PaymentStatus.Executed && (
+            <div className="mt-4">
+              <label className="block text-sm font-semibold mb-2">
+                Upload Proof of Execution
+              </label>
+              <Input
+                type="file"
+                onChange={handleFileChange}
+                className="block w-full"
+              />
+              {file && (
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Selected File: {file.name}
+                </p>
+              )}
+            </div>
+          )}
         </div>
         <DialogFooter>
           <Button variant="secondary" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button onClick={handleConfirm}>Confirm</Button>
+          <Button
+            onClick={handleConfirm}
+            disabled={status === PaymentStatus.Executed && !file}
+          >
+            Confirm
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

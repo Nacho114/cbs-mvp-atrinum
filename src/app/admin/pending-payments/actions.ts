@@ -133,3 +133,31 @@ export async function failPendingPayment(pendingPayment: PendingPayment) {
     serverErrorMessage: 'Error failing payment',
   })
 }
+
+import { paymentFiles, PaymentFileType } from '@/lib/db/schema'
+
+export async function insertPaymentConfirmation(
+  bucketName: string,
+  filePath: string,
+  paymentId: string,
+) {
+  return executeAction({
+    actionFn: async () => {
+      const user = await getUser()
+
+      if (!user) throw new Error('User not found')
+
+      // Insert the payment confirmation file
+      await db.insert(paymentFiles).values({
+        createdBy: user.id,
+        bucketName,
+        filePath,
+        paymentId,
+        paymentFileType: PaymentFileType.Confirmation,
+      })
+    },
+    isProtected: true, // Ensure only authorized actions can be performed
+    clientSuccessMessage: 'Payment confirmation inserted successfully',
+    serverErrorMessage: 'Error inserting payment confirmation',
+  })
+}
