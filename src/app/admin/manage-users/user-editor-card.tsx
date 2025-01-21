@@ -42,10 +42,12 @@ export default function UserEditorCard({
   profile,
   onBackAction,
 }: UserEditorCardProps) {
-  const [accounts, setAccounts] = useState<Account[] | null>(null) // User's accounts
-  const [selectedAccount, setSelectedAccount] = useState<Account | null>(null) // Selected account
-  const [amountToAdd, setAmountToAdd] = useState<number | null>(null) // Amount to add
-  const [newBalance, setNewBalance] = useState<number | null>(null) // New balance after adding the amount
+  const [accounts, setAccounts] = useState<Account[] | undefined>(undefined) // User's accounts
+  const [selectedAccount, setSelectedAccount] = useState<Account | undefined>(
+    undefined,
+  ) // Selected account
+  const [amountToAdd, setAmountToAdd] = useState<number | undefined>(undefined) // Amount to add
+  const [newBalance, setNewBalance] = useState<number | undefined>(undefined) // New balance after adding the amount
   const [isLoading, setIsLoading] = useState(true) // Loading state
   const [isDialogOpen, setIsDialogOpen] = useState(false) // Dialog state
 
@@ -55,7 +57,7 @@ export default function UserEditorCard({
       try {
         const accountsData = await getAccounts(profile.id)
         setAccounts(accountsData || [])
-        setSelectedAccount(accountsData?.[0] || null) // Default to the first account, or null if no accounts
+        setSelectedAccount(accountsData?.[0]) // Default to the first account
       } catch (error) {
         console.error('Failed to fetch accounts:', error)
       } finally {
@@ -67,10 +69,10 @@ export default function UserEditorCard({
 
   // Handle account selection
   const handleAccountChange = (accountId: string) => {
-    const account = accounts?.find((acc) => acc.id === accountId) || null
+    const account = accounts?.find((acc) => acc.id === accountId)
     setSelectedAccount(account)
-    setNewBalance(null) // Reset the new balance when the account changes
-    setAmountToAdd(null) // Reset the amount to add
+    setNewBalance(undefined) // Reset the new balance when the account changes
+    setAmountToAdd(undefined) // Reset the amount to add
   }
 
   // Handle amount input change
@@ -87,17 +89,17 @@ export default function UserEditorCard({
         setNewBalance(selectedAccount.balance + parsedValue) // Update the new balance
       }
     } else {
-      setAmountToAdd(null) // Reset if invalid
-      setNewBalance(null)
+      setAmountToAdd(undefined) // Reset if invalid
+      setNewBalance(undefined)
     }
   }
 
   // Handle save action
   const handleSave = async () => {
     if (
-      selectedAccount === null ||
-      amountToAdd === null ||
-      newBalance === null
+      selectedAccount === undefined ||
+      amountToAdd === undefined ||
+      newBalance === undefined
     ) {
       console.error('Please select an account and enter a valid amount.')
       return
@@ -187,14 +189,14 @@ export default function UserEditorCard({
               <Input
                 type="text"
                 placeholder="Enter amount"
-                value={amountToAdd !== null ? amountToAdd.toString() : ''}
+                value={amountToAdd !== undefined ? amountToAdd.toString() : ''}
                 onChange={(e) => handleAmountChange(e.target.value)}
               />
             </div>
           </div>
 
           {/* Display Updated Balance */}
-          {newBalance !== null && selectedAccount && (
+          {newBalance !== undefined && selectedAccount && (
             <div className="grid grid-cols-5 items-center gap-4">
               <span className="text-right font-semibold col-span-1">
                 New Balance
@@ -212,7 +214,9 @@ export default function UserEditorCard({
             </Button>
             <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <AlertDialogTrigger asChild>
-                <Button disabled={amountToAdd === null || !selectedAccount}>
+                <Button
+                  disabled={amountToAdd === undefined || !selectedAccount}
+                >
                   Update
                 </Button>
               </AlertDialogTrigger>
@@ -228,7 +232,7 @@ export default function UserEditorCard({
 
                       <span className="font-semibold">Previous Balance:</span>
                       <span className="text-right">
-                        {selectedAccount !== null &&
+                        {selectedAccount !== undefined &&
                           formatValue(
                             selectedAccount?.balance,
                             selectedAccount?.currency || '',
@@ -237,14 +241,14 @@ export default function UserEditorCard({
 
                       <span className="font-semibold">Amount to Add:</span>
                       <span className="text-right">
-                        {amountToAdd !== null &&
-                          selectedAccount !== null &&
+                        {amountToAdd !== undefined &&
+                          selectedAccount !== undefined &&
                           formatValue(amountToAdd, selectedAccount.currency)}
                       </span>
 
                       <span className="font-semibold">New Balance:</span>
                       <span className="text-right">
-                        {newBalance !== null &&
+                        {newBalance !== undefined &&
                           formatValue(
                             newBalance,
                             selectedAccount?.currency || '',
