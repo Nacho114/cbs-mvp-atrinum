@@ -31,6 +31,8 @@ import { SetPendingPayments } from './page'
 import { Input } from '@/components/ui/input'
 import { createClient } from '@/lib/supabase/client'
 
+import { Loader2 } from 'lucide-react' // Ensure you have the loader component
+
 function generateRandomString(length: number = 10): string {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
   let result = ''
@@ -56,6 +58,7 @@ export function ConfirmPendingPaymentDialog({
     PaymentStatus.Executed | PaymentStatus.Failed
   >(PaymentStatus.Executed)
   const [file, setFile] = useState<File | null>(null)
+  const [isLoading, setIsLoading] = useState(false) // Loading state
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files?.[0] || null
@@ -65,66 +68,79 @@ export function ConfirmPendingPaymentDialog({
   const supabase = createClient()
 
   const handleExecute = async () => {
-    console.log('1....')
-    if (!file) {
-      toast({
-        variant: 'destructive',
-        description: 'File is required for execution.',
-      })
-      return
-    }
-
-    const fileExt = file.name.split('.').pop()
-    const filePath = `payment-confirmation-${generateRandomString()}.${fileExt}`
-    const bucketName = 'files'
-
-    const { error: uploadError } = await supabase.storage
-      .from(bucketName)
-      .upload(filePath, file)
-
-    if (uploadError) {
-      console.log(uploadError)
-      throw uploadError
-    } else {
-      const res = await insertPaymentConfirmation(
-        bucketName,
-        filePath,
-        pendingPayment.paymentId,
-      )
-      if (!res.success) {
-        toast({ variant: 'destructive', description: res.message })
+    setIsLoading(true) // Start loading
+    try {
+      if (!file) {
+        toast({
+          variant: 'destructive',
+          description: 'File is required for execution.',
+        })
+        return
       }
-    }
 
-    const response = await executePendingPayment(pendingPayment)
+      const fileExt = file.name.split('.').pop()
+      const filePath = `payment-confirmation-${generateRandomString()}.${fileExt}`
+      const bucketName = 'files'
 
-    if (response.success) {
-      const payments = await getPendingPayments()
-      if (payments) {
-        setPendingPayments(payments)
+      const { error: uploadError } = await supabase.storage
+        .from(bucketName)
+        .upload(filePath, file)
+
+      if (uploadError) {
+        console.log(uploadError)
+        throw uploadError
+      } else {
+        const res = await insertPaymentConfirmation(
+          bucketName,
+          filePath,
+          pendingPayment.paymentId,
+        )
+        if (!res.success) {
+          toast({ variant: 'destructive', description: res.message })
+        }
       }
-      toast({ description: response.message })
-    } else {
-      toast({ variant: 'destructive', description: response.message })
-    }
 
-    setOpen(false)
+      const response = await executePendingPayment(pendingPayment)
+
+      if (response.success) {
+        const payments = await getPendingPayments()
+        if (payments) {
+          setPendingPayments(payments)
+        }
+        toast({ description: response.message })
+      } else {
+        toast({ variant: 'destructive', description: response.message })
+      }
+
+      setOpen(false)
+    } catch (error) {
+      console.error('Error executing payment:', error)
+    } finally {
+      setIsLoading(false) // End loading
+    }
   }
 
   const handleFailed = async () => {
-    const response = await failPendingPayment(pendingPayment)
+    setIsLoading(true) // Start loading
+    try {
+      const response = await failPendingPayment(pendingPayment)
 
-    if (response.success) {
-      const payments = await getPendingPayments()
-      if (payments) {
-        setPendingPayments(payments)
+      if (response.success) {
+        const payments = await getPendingPayments()
+        if (payments) {
+          setPendingPayments(payments)
+        }
+        toast({ description: response.message })
+      } else {
+        toast({ variant: 'destructive', description: response.message })
       }
-      toast({ description: response.message })
-    } else {
-      toast({ variant: 'destructive', description: response.message })
-    }
 
-    setOpen(false)
+      setOpen(false)
+    } catch (error) {
+      console.error('Error failing payment:', error)
+    } finally {
+      setIsLoading(false) // End loading
+    }
   }
 
   const handleConfirm = async () => {
@@ -197,14 +213,22 @@ export function ConfirmPendingPaymentDialog({
           )}
         </div>
         <DialogFooter>
-          <Button variant="secondary" onClick={() => setOpen(false)}>
+          <Button
+            variant="secondary"
+            onClick={() => setOpen(false)}
+            disabled={isLoading}
+          >
             Cancel
           </Button>
           <Button
             onClick={handleConfirm}
-            disabled={status === PaymentStatus.Executed && !file}
+            disabled={isLoading || (status === PaymentStatus.Executed && !file)}
           >
-            Confirm
+            {isLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              'Confirm'
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
