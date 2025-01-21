@@ -139,7 +139,7 @@ export default function UserEditorCard({
   }
 
   return (
-    <Card className="max-w-xl mx-auto">
+    <Card className="max-w-md mx-auto">
       <CardHeader>
         <CardTitle>Manage Profile</CardTitle>
         <CardDescription>Add funds to an account.</CardDescription>
@@ -220,7 +220,7 @@ export default function UserEditorCard({
                   Update
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent>
+              <AlertDialogContent className="sm:max-w-[400px]">
                 <AlertDialogHeader>
                   <AlertDialogTitle>Confirm Changes</AlertDialogTitle>
                   <AlertDialogDescription>
