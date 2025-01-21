@@ -8,6 +8,8 @@ import {
   SelectPayment,
 } from '@/lib/db/schema/payments'
 import { executeAction } from '@/lib/db/utils/executeAction'
+import { executeQuery } from '@/lib/db/utils/executeQuery'
+import { paymentFiles } from '@/lib/db/schema'
 
 export async function removePendingPayment(paymentToRemove: SelectPayment) {
   return executeAction({
@@ -33,5 +35,31 @@ export async function removePendingPayment(paymentToRemove: SelectPayment) {
     isProtected: true, // Ensure only authorized actions can be performed
     clientSuccessMessage: 'Payment removed successfully',
     serverErrorMessage: 'Error removing payment',
+  })
+}
+
+export interface StorageFile {
+  bucketName: string
+  filePath: string
+}
+
+export async function getPaymentConfirmation(
+  paymentId: string,
+): Promise<StorageFile | null> {
+  return executeQuery({
+    queryFn: async () => {
+      const storageFile = await db
+        .select({
+          bucketName: paymentFiles.bucketName,
+          filePath: paymentFiles.filePath,
+        })
+        .from(paymentFiles)
+        .where(eq(paymentFiles.paymentId, paymentId))
+        .limit(1)
+
+      return storageFile[0]
+    },
+    isProtected: true, // Ensure the user is authenticated
+    serverErrorMessage: 'Error reading payment confirmation',
   })
 }

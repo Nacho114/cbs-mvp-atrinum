@@ -20,9 +20,58 @@ import { Button } from '@/components/ui/button'
 import { SelectPayment } from '@/lib/db/schema/payments'
 import { formatDate, formatValue } from '@/lib/utils'
 import { useCurrentAccount } from '../dashboard-state-provider'
+import { getPaymentConfirmation, StorageFile } from './actions'
+import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
 
 export function PaymentInfoDialog({ payment }: { payment: SelectPayment }) {
   const { currentAccount } = useCurrentAccount()
+  const [confirmationFile, setConfirmationFile] = useState<
+    StorageFile | undefined
+  >(undefined)
+
+  const supabase = createClient()
+
+  // Fetch confirmation file when dialog is loaded
+  useEffect(() => {
+    async function fetchConfirmation() {
+      try {
+        const result = await getPaymentConfirmation(payment.id)
+        if (result) {
+          setConfirmationFile(result)
+        }
+      } catch (error) {
+        console.error('Error fetching payment confirmation:', error)
+      }
+    }
+
+    fetchConfirmation()
+  }, [payment.id])
+
+  const handleDownloadConfirmation = async () => {
+    if (confirmationFile === undefined) {
+      // TODO: Treat error
+      console.error('Confirmation file is undefined.')
+      return
+    }
+    const { data, error } = await supabase.storage
+      .from(confirmationFile.bucketName)
+      .download(confirmationFile.filePath)
+    if (error) {
+      throw error
+    }
+    // Create a temporary link element for the Blob
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(data) // Use the Blob directly
+    link.download = confirmationFile.filePath // Extract the file name
+
+    // Trigger the download
+    link.click()
+
+    // Clean up the URL object
+    URL.revokeObjectURL(link.href)
+  }
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -71,7 +120,11 @@ export function PaymentInfoDialog({ payment }: { payment: SelectPayment }) {
             <span className="col-span-2 truncate">{payment.iban}</span>
           </div>
         </div>
-        <Button>Download Confirmation</Button>
+        {confirmationFile && (
+          <Button onClick={handleDownloadConfirmation}>
+            Download Confirmation
+          </Button>
+        )}
       </DialogContent>
     </Dialog>
   )
