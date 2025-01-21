@@ -80,9 +80,9 @@ export function TablePendingPayments({
       {selectedPayment && (
         <ConfirmPendingPaymentDialog
           pendingPayment={selectedPayment}
-          setPendingPayments={setPendingPaymentsAction}
+          setPendingPaymentsAction={setPendingPaymentsAction}
           open={dialogOpen}
-          setOpen={setDialogOpen}
+          setOpenAction={setDialogOpen}
         />
       )}
     </>

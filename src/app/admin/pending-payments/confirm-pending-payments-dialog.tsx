@@ -31,13 +31,13 @@ import { SetPendingPayments } from './page'
 export function ConfirmPendingPaymentDialog({
   pendingPayment,
   open,
-  setOpen,
-  setPendingPayments,
+  setOpenAction: setOpen,
+  setPendingPaymentsAction: setPendingPayments,
 }: {
   pendingPayment: PendingPayment
   open: boolean
-  setOpen: (open: boolean) => void
-  setPendingPayments: SetPendingPayments
+  setOpenAction: (open: boolean) => void
+  setPendingPaymentsAction: SetPendingPayments
 }) {
   const [status, setStatus] = useState<
     PaymentStatus.Executed | PaymentStatus.Failed
