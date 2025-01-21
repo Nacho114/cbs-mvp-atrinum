@@ -8,9 +8,8 @@ import SelectProfileCard from './select-profile-card'
 export default async function Page() {
   const profiles = await getProfiles()
   if (!profiles) {
-    return <div>Loading or sthg?</div>
+    return <div></div>
   }
-  console.log({ profiles })
 
   return (
     <div className="container mx-auto px-4">

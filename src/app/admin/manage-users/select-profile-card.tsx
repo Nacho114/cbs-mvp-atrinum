@@ -35,7 +35,7 @@ export default function SelectProfileCard({
     return (
       <UserEditorCard
         profile={selectedProfile}
-        onBack={() => setSelectedProfile(null)} // Allow user to go back
+        onBackAction={() => setSelectedProfile(null)} // Allow user to go back
       />
     )
   }

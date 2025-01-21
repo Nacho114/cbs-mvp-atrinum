@@ -69,13 +69,16 @@ export async function getAccounts(userId: string): Promise<Account[] | null> {
   })
 }
 
-export async function updateProfileBalance(userId: string, newBalance: number) {
+export async function updateProfileBalance(
+  accountId: string,
+  newBalance: number,
+) {
   return executeAction({
     actionFn: async () => {
       await db
         .update(accounts)
         .set({ balance: newBalance })
-        .where(eq(accounts.userId, userId))
+        .where(eq(accounts.id, accountId))
     },
     isProtected: true, // Ensure the user is authenticated
     serverErrorMessage: 'Error updating balance for profile',

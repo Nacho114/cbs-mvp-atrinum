@@ -17,24 +17,37 @@ import {
 } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Account, getAccounts, Profile } from './actions'
+import { Account, getAccounts, Profile, updateProfileBalance } from './actions'
 import { cn, formatValue } from '@/lib/utils'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import { Loader } from 'lucide-react'
+import { toast } from '@/hooks/use-toast'
 
 interface UserEditorCardProps {
   profile: Profile
-  onBack: () => void
+  onBackAction: () => void
 }
 
 export default function UserEditorCard({
   profile,
-  onBack,
+  onBackAction,
 }: UserEditorCardProps) {
   const [accounts, setAccounts] = useState<Account[] | null>(null) // User's accounts
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null) // Selected account
-  const [amountToAdd, setAmountToAdd] = useState<string>('') // Amount to add as a string for input handling
+  const [amountToAdd, setAmountToAdd] = useState<number | null>(null) // Amount to add
   const [newBalance, setNewBalance] = useState<number | null>(null) // New balance after adding the amount
   const [isLoading, setIsLoading] = useState(true) // Loading state
+  const [isDialogOpen, setIsDialogOpen] = useState(false) // Dialog state
 
   // Fetch accounts and preselect the first account on load
   useEffect(() => {
@@ -57,32 +70,49 @@ export default function UserEditorCard({
     const account = accounts?.find((acc) => acc.id === accountId) || null
     setSelectedAccount(account)
     setNewBalance(null) // Reset the new balance when the account changes
-    setAmountToAdd('') // Reset the amount to add
+    setAmountToAdd(null) // Reset the amount to add
   }
 
   // Handle amount input change
   const handleAmountChange = (value: string) => {
-    const sanitizedValue = value.replace(/[^0-9.]/g, '') // Allow only numbers and a single decimal
-    setAmountToAdd(sanitizedValue)
+    const sanitizedValue = value
+      .replace(/(?!^-)[^0-9.]/g, '') // Allow numbers, single decimal, and `-`
+      .replace(/(\..*?)\..*/g, '$1') // Remove extra decimal points
+
     const parsedValue = parseFloat(sanitizedValue)
-    if (selectedAccount && !isNaN(parsedValue)) {
-      setNewBalance(selectedAccount.balance + parsedValue) // Calculate the new balance
+
+    if (!isNaN(parsedValue)) {
+      setAmountToAdd(parsedValue) // Set the parsed number
+      if (selectedAccount) {
+        setNewBalance(selectedAccount.balance + parsedValue) // Update the new balance
+      }
     } else {
-      setNewBalance(null) // Reset if input is invalid
+      setAmountToAdd(null) // Reset if invalid
+      setNewBalance(null)
     }
   }
 
   // Handle save action
-  const handleSave = () => {
-    if (!selectedAccount || !amountToAdd) {
-      console.error('Please select an account and enter an amount to add.')
+  const handleSave = async () => {
+    if (
+      selectedAccount === null ||
+      amountToAdd === null ||
+      newBalance === null
+    ) {
+      console.error('Please select an account and enter a valid amount.')
       return
     }
-    console.log(
-      `Account ID: ${selectedAccount.id}, Adding: ${amountToAdd}, New Balance: ${newBalance}`,
-    )
-    // Save logic (e.g., API call) would go here
-    onBack() // Return to the previous view
+
+    const response = await updateProfileBalance(selectedAccount.id, newBalance)
+
+    if (response.success) {
+      toast({ description: response.message })
+    } else {
+      toast({ variant: 'destructive', description: response.message })
+    }
+
+    setIsDialogOpen(false)
+    onBackAction()
   }
 
   if (isLoading) {
@@ -99,7 +129,7 @@ export default function UserEditorCard({
     return (
       <div className="flex flex-col items-center justify-center h-64 text-center">
         <p className="text-gray-500">No accounts found for this profile.</p>
-        <Button variant="outline" onClick={onBack} className="mt-4">
+        <Button variant="outline" onClick={onBackAction} className="mt-4">
           Back
         </Button>
       </div>
@@ -151,13 +181,13 @@ export default function UserEditorCard({
           {/* Amount Input */}
           <div className="grid grid-cols-5 items-center gap-4">
             <label className="text-right font-semibold col-span-1">
-              Amount
+              Amount to Add
             </label>
             <div className="col-span-4">
               <Input
                 type="text"
                 placeholder="Enter amount"
-                value={amountToAdd}
+                value={amountToAdd !== null ? amountToAdd.toString() : ''}
                 onChange={(e) => handleAmountChange(e.target.value)}
               />
             </div>
@@ -177,15 +207,60 @@ export default function UserEditorCard({
 
           {/* Action Buttons */}
           <div className="flex justify-between mt-4">
-            <Button variant="outline" onClick={onBack}>
+            <Button variant="outline" onClick={onBackAction}>
               Back
             </Button>
-            <Button
-              onClick={handleSave}
-              disabled={!amountToAdd || !selectedAccount}
-            >
-              Save
-            </Button>
+            <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <AlertDialogTrigger asChild>
+                <Button disabled={amountToAdd === null || !selectedAccount}>
+                  Update
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Confirm Changes</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    <div className="grid grid-cols-2 gap-4">
+                      <span className="font-semibold">Account:</span>
+                      <span className="text-right">
+                        {selectedAccount?.name || '--'}
+                      </span>
+
+                      <span className="font-semibold">Previous Balance:</span>
+                      <span className="text-right">
+                        {selectedAccount !== null &&
+                          formatValue(
+                            selectedAccount?.balance,
+                            selectedAccount?.currency || '',
+                          )}
+                      </span>
+
+                      <span className="font-semibold">Amount to Add:</span>
+                      <span className="text-right">
+                        {amountToAdd !== null &&
+                          selectedAccount !== null &&
+                          formatValue(amountToAdd, selectedAccount.currency)}
+                      </span>
+
+                      <span className="font-semibold">New Balance:</span>
+                      <span className="text-right">
+                        {newBalance !== null &&
+                          formatValue(
+                            newBalance,
+                            selectedAccount?.currency || '',
+                          )}
+                      </span>
+                    </div>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleSave}>
+                    Confirm
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
       </CardContent>
