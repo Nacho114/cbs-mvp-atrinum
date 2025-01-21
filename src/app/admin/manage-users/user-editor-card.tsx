@@ -130,7 +130,7 @@ export default function UserEditorCard({
   if (!accounts || accounts.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-64 text-center">
-        <p className="text-gray-500">No accounts found for this profile.</p>
+        <div className="text-gray-500">No accounts found for this profile.</div>
         <Button variant="outline" onClick={onBackAction} className="mt-4">
           Back
         </Button>
@@ -224,7 +224,7 @@ export default function UserEditorCard({
                 <AlertDialogHeader>
                   <AlertDialogTitle>Confirm Changes</AlertDialogTitle>
                   <AlertDialogDescription>
-                    <div className="grid grid-cols-2 gap-4">
+                    <span className="grid grid-cols-2 gap-4">
                       <span className="font-semibold">Account:</span>
                       <span className="text-right">
                         {selectedAccount?.name || '--'}
@@ -254,7 +254,7 @@ export default function UserEditorCard({
                             selectedAccount?.currency || '',
                           )}
                       </span>
-                    </div>
+                    </span>
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
