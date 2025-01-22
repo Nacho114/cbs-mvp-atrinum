@@ -4,7 +4,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 // From The official docs:
 // https://supabase.com/docs/guides/auth/server-side/nextjs
 
- /* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
@@ -62,13 +62,19 @@ export async function updateSession(request: NextRequest) {
   const isResetRoute = pathName.startsWith('/reset')
   const isCreateProfileRoute = pathName.startsWith('/create-profile')
   const isProtectedRoute =
-    isDashboardRoute || isAdminRoute || isResetRoute || isCreateProfileRoute
+    isDashboardRoute || isResetRoute || isCreateProfileRoute
 
   // TODO: admin login route?
 
   if (isProtectedRoute && !user) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
+    return NextResponse.redirect(url)
+  }
+
+  if (isAdminRoute && !user) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/login/admin'
     return NextResponse.redirect(url)
   }
 
